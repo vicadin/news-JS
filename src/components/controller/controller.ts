@@ -1,27 +1,33 @@
 import AppLoader from './appLoader';
+import { IArticlesResponse, ISourcesResponse, NewsCallback, NewsEndpoint, SourceCallback } from '../../types';
 
 class AppController extends AppLoader {
-    getSources(callback) {
-        super.getResp(
+    public getSources(callback: SourceCallback): void {
+        super.getResp<ISourcesResponse>(
             {
-                endpoint: 'sources',
+                endpoint: NewsEndpoint.Sources,
             },
             callback
         );
     }
 
-    getNews(e, callback) {
-        let target = e.target;
-        const newsContainer = e.currentTarget;
+    public getNews(e: MouseEvent, callback: NewsCallback): void {
+        let target: HTMLElement | null = e.target as HTMLElement | null;
+        const newsContainer: HTMLElement = e.currentTarget as HTMLElement;
 
-        while (target !== newsContainer) {
+        while (target && target !== newsContainer) {
             if (target.classList.contains('source__item')) {
-                const sourceId = target.getAttribute('data-source-id');
-                if (newsContainer.getAttribute('data-source') !== sourceId) {
+                const sourceId: string | null = target.getAttribute('data-source-id');
+                if (sourceId && newsContainer.getAttribute('data-source') !== sourceId) {
                     newsContainer.setAttribute('data-source', sourceId);
-                    super.getResp(
+
+                    const allSources: NodeListOf<Element> = newsContainer.querySelectorAll('.source__item');
+                    allSources.forEach((btn: Element): void => btn.classList.remove('active'));
+                    target.classList.add('active');
+
+                    super.getResp<IArticlesResponse>(
                         {
-                            endpoint: 'everything',
+                            endpoint: NewsEndpoint.Everything,
                             options: {
                                 sources: sourceId,
                             },
@@ -31,7 +37,7 @@ class AppController extends AppLoader {
                 }
                 return;
             }
-            target = target.parentNode;
+            target = target.parentElement;
         }
     }
 }
