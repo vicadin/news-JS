@@ -1,20 +1,37 @@
-import './sources.css';
+import '/sources.css';
+import { ISourceItem } from '../../../types';
 
 class Sources {
-    draw(data) {
-        const fragment = document.createDocumentFragment();
-        const sourceItemTemp = document.querySelector('#sourceItemTemp');
+    public draw(data: ReadonlyArray<ISourceItem>): void {
+        const fragment: DocumentFragment = document.createDocumentFragment();
+        const sourceItemTemp: HTMLTemplateElement | null = document.querySelector('#sourceItemTemp');
 
-        data.forEach((item) => {
-            const sourceClone = sourceItemTemp.content.cloneNode(true);
+        if (!sourceItemTemp) {
+            console.error('Template #sourceItemTemp not found');
+            return;
+        }
 
-            sourceClone.querySelector('.source__item-name').textContent = item.name;
-            sourceClone.querySelector('.source__item').setAttribute('data-source-id', item.id);
+        data.forEach((item: ISourceItem): void => {
+            const sourceClone: DocumentFragment = sourceItemTemp.content.cloneNode(true) as DocumentFragment;
+
+            const nameElem: HTMLElement | null = sourceClone.querySelector('.source__item-name');
+            if (nameElem) {
+                nameElem.textContent = item.name;
+            }
+
+            const itemElem: HTMLElement | null = sourceClone.querySelector('.source__item');
+            if (itemElem) {
+                itemElem.setAttribute('data-source-id', item.id);
+            }
 
             fragment.append(sourceClone);
         });
 
-        document.querySelector('.sources').append(fragment);
+        const sourcesContainer: HTMLElement | null = document.querySelector('.sources');
+        if (sourcesContainer) {
+            sourcesContainer.innerHTML = '';
+            sourcesContainer.append(fragment);
+        }
     }
 }
 

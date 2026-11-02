@@ -1,19 +1,23 @@
 import News from './news/news';
 import Sources from './sources/sources';
+import { IArticleItem, IArticlesResponse, ISourceItem, ISourcesResponse } from '../../types';
 
 export class AppView {
-    constructor() {
+    private news: News;
+    private sources: Sources;
+
+    public constructor() {
         this.news = new News();
         this.sources = new Sources();
     }
 
-    drawNews(data) {
-        const values = data?.articles ? data?.articles : [];
+    public drawNews(data: IArticlesResponse | null | undefined): void {
+        const values: IArticleItem[] = data?.articles ? data.articles : [];
         this.news.draw(values);
     }
 
-    drawSources(data) {
-        const values = data?.sources ? data?.sources : [];
+    public drawSources(data: ISourcesResponse | null | undefined): void {
+        const values: ISourceItem[] = data?.sources ? data.sources : [];
         this.sources.draw(values);
     }
 }
